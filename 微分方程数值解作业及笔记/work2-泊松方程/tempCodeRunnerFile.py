@@ -1,0 +1,1 @@
+ u = np.reshape(U, (N,M))

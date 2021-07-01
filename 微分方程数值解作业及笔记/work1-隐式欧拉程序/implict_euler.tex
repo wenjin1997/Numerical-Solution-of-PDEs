@@ -1,0 +1,153 @@
+\documentclass{ctexart}
+% \usepackage[UTF-8]{ctex}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{tabularx}
+
+\usepackage{booktabs,multirow,longtable}
+
+\usepackage{listings}
+\usepackage{listings}
+\usepackage{color}
+
+%导言区插入下面三行
+\usepackage{graphicx} %插入图片的宏包
+\usepackage{float} %设置图片浮动位置的宏包
+\usepackage{subfigure} %插入多图时用子图显示的宏包
+
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{frame=tb,
+  language=Python,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+
+\title{作业1：隐式欧拉程序}
+\author{谢文进}
+\date{\today}
+\begin{document}
+\maketitle
+\section{隐式欧拉方法}
+求解如下常微分方程：
+\begin{equation} \label{eq_arry}%要调用宏包amsmath
+    \begin{cases}
+        \frac{du}{dt}=-\frac{u}{t},1\leq t\leq 2\\
+        u(1)=1
+    \end{cases}	
+\end{equation}
+\subsection{精确解}
+将原方程化为$tdu+udt=0$，则有$d(ut)=0$，解得$ut=C$($C$为常数)，代入初始条件得$C=1$，从而该方程的精确解为：
+\begin{displaymath}
+    u=\frac{1}{t},(1\leq t \leq2).
+\end{displaymath}
+\subsection{欧拉方法}
+代入欧拉格式得：
+\begin{displaymath}
+    u_{i+1}=u_{i}+hf(t_i,u_i)=u_i+h(-\frac{u_i}{t_i})
+\end{displaymath}
+\subsection{隐式欧拉方法}
+由隐式欧拉格式得：
+\begin{displaymath}
+    u_{i+1}=u_{i}+hf(t_{i+1},u_{i+1})=u_i+h(-\frac{u_{i+1}}{t_{i+1}})，
+\end{displaymath}
+移项化简可得：
+\begin{displaymath}
+    u_{i+1}=\frac{t_{i+1}u_i}{t_{i+1}+h}
+\end{displaymath}
+
+\subsection{程序}
+根据上述推导，用python编写程序，代码如下：
+\begin{lstlisting}
+# implict euler method
+import numpy as np
+import matplotlib.pyplot as plt
+
+# the right term of the ODE
+def f(t, u):
+    f = -u/t
+    return f
+
+# the exact solution of ODE 
+def fexact(t):
+    fexact = 1/t
+    return fexact
+
+N = 100
+t_n = 2.0
+dt = (t_n - 1.0) / N
+t = np.arange(1.0, t_n + dt, dt)
+u_euler = np.arange(1.0, t_n + dt, dt)
+u = np.arange(1.0, t_n + dt, dt)
+u_true = np.arange(1.0, t_n + dt, dt)
+
+i = 0
+while i < N:
+    t[i+1] = t[i] + dt
+    u_euler[i+1] = u_euler[i] + dt * f(t[i], u_euler[i])
+    u[i+1] = (u[i] * t[i+1])/(t[i+1] + dt)
+    u_true[i+1] = fexact(t[i+1])
+    i = i + 1
+
+err_euler = max(abs(u_euler - u_true))
+err_implict_euler = max(abs(u - u_true))
+print("The error of euler method: ",err_euler)
+print("The error of implict euler method: ",err_implict_euler)
+
+# begin drawing
+plt.title('Result')
+plt.plot(t, u_euler, color='green', label='euler')
+plt.plot(t, u, color='blue', label='implict euler')
+plt.plot(t, u_true, color='red', label='exact')
+plt.legend() # show the legend
+
+plt.xlabel('t')
+plt.ylabel('u')
+plt.show()
+\end{lstlisting}
+
+\subsection{结果分析}
+当取$h=0.01$时，此时欧拉方法的误差为0.02631578947368396，隐式欧拉方法的误差为0.023809523809523836，结果如下图所示：
+
+当取不同$h$，得到的误差如下表所示：
+
+\begin{longtable}{ccccc}
+    \caption{不同$h$的误差表}\\\hline
+    $h$ & 欧拉方法 & 
+    \multicolumn{1}{c}{隐式欧拉方法} \\\hline
+    \endfirsthead
+    \caption[]{不同$h$的误差表(续表)}\\
+    \multicolumn{3}{r}{\footnotesize 接上页}\\\hline
+    $h$ & 欧拉方法 & \multicolumn{1}{c}{隐式欧拉方法}\\
+    \hline\endhead
+    \hline\multicolumn{3}{r}{\footnotesize 接下页}\\
+    \endfoot\hline\hline\endlastfoot
+    $\frac{1}{2}$ & 0.16666666666666663 & 0.09999999999999998   \\
+    $\frac{1}{4}$ & 0.0714285714285714 & 0.05555555555555558   \\
+    $\frac{1}{8}$ & 0.033333333333333215 & 0.02941176470588236   \\
+    $\frac{1}{16}$ & 0.01612903225806467 & 0.015151515151515138   \\
+    $\frac{1}{32}$ & 0.00793650793650813 & 0.007692307692307665   \\
+    $\frac{1}{64}$ & 0.003937007874015519 & 0.003875968992248069   \\
+    $10^{-1}$ & 0.02631578947368396 & 0.023809523809523836    \\
+    $10^{-2}$ & 0.0025125628140699185 & 0.0024875621890547706   \\
+    $10^{-3}$ & 0.0002501250625697726 & 0.0002498750624687629   \\
+\end{longtable}
+
+
+\end{document}

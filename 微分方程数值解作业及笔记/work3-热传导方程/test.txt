@@ -1,0 +1,37 @@
+clear all;close all;clc;
+
+t = 0.03;       %时间范围，计算到0.03秒
+x = 1;          %空间范围，0-1米
+m = 320;        %时间方向分320个格子
+n = 64;         %空间方向分64个格子
+ht = t/(m-1);   %时间步长dt
+hx = x/(n-1);   %空间步长dx
+
+u = zeros(m,n);
+
+%设置边界条件
+i=2:n-1;
+xx = (i-1)*x/(n-1);
+u(1,2:n-1) = sin(4*pi*xx);
+u(:,1) = 0;
+u(:,end) = 0;
+
+%根据推导的差分公式计算
+for i=1:m-1
+    for j=2:n-1
+        u(i+1,j) = ht*(u(i,j+1)+u(i,j-1)-2*u(i,j))/hx^2 + u(i,j);
+    end
+end
+
+%画出数值解
+[x,t] = meshgrid(0:x/(n-1):1,0:0.03/(m-1):0.03);
+mesh(x,t,u)
+
+%画出解析解
+u1 = exp(-(4*pi)^2*t).*sin(4*pi*x);
+figure;
+mesh(x,t,u1);
+
+%数值解与解析解的差
+figure;
+mesh(abs(u-u1));

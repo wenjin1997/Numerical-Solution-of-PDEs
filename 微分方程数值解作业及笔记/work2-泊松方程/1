@@ -1,0 +1,16 @@
+\begin{longtable}{ccccc}
+    \caption{不同$h$的误差表}\\\hline
+    $h$ &
+    \multicolumn{1}{c}{误差} \\\hline
+    \endfirsthead
+    \caption[]{不同$h$的误差表(续表)}\\
+    \multicolumn{2}{r}{\footnotesize 接上页}\\\hline
+    $h$ &  \multicolumn{1}{c}{误差}\\
+    \hline\endhead
+    \hline\multicolumn{2}{r}{\footnotesize 接下页}\\
+    \endfoot\hline\hline\endlastfoot
+    $\frac{1}{10}$ & 0.005519939625335368\\
+    $\frac{1}{20}$ & 0.0013997692884775148\\
+    $\frac{1}{40$ & 0.0003511099859592193\\
+    $\frac{1}{80}$ & 8.787626974093854e-05\\
+\end{longtable}
